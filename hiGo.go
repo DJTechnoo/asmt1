@@ -56,7 +56,8 @@ func FirstPart(w http.ResponseWriter){
 	}
 	fmt.Fprintln(w, "name:", j.Name, "project:", j.Owner.Login)
 	
-	SecondPart(w) //with language url
+	SecondPart(w, j.Languages_url) //with language url
+	ThirdPart(w, j.Contributors_url)					// with commits url
 }
 
 
@@ -64,9 +65,10 @@ func FirstPart(w http.ResponseWriter){
 //		-------------------------------------------------------------------------
 //		This function deals with parsing and writing languages from a map 
 //		-------------------------------------------------------------------------
-func SecondPart(w http.ResponseWriter){ // with language url
+func SecondPart(w http.ResponseWriter, langUrl string){ // with language url
+	fmt.Fprintln(w, langUrl)
 	var langs map[string]int
-	body := GetBody(w, "http://www.mocky.io/v2/59d2150a120000a90a244fdb")
+	body := GetBody(w, "http://www.mocky.io/v2/59d2150a120000a90a244fdb") 	// 	change to langUrl
 	err := json.Unmarshal(body, &langs)
 	if err != nil{
 		fmt.Fprintln(w, "could not unmarshal")
@@ -78,18 +80,43 @@ func SecondPart(w http.ResponseWriter){ // with language url
 	
 }
 
+//		---------------------------------------------
+//		This func writes commits and takes w and contributers url
+//		---------------------------------------------
+func ThirdPart(w http.ResponseWriter, comUrl string){
+	var committers []Committer
+	fmt.Fprintln(w, comUrl)
+	body := GetBody(w, "http://www.mocky.io/v2/59d215a3120000760a244fdd") 	// 	change to comUrl
+	err := json.Unmarshal(body, &committers)
+	if err != nil{
+		fmt.Fprintln(w, "could not unmarshal")
+		return
+	}
+	fmt.Fprintln(w, committers)				// should only list the top contributor
+	
+}
+
 //		-------------------------------------------------------------------------
 //		These structs make up the needed json data
 //		-------------------------------------------------------------------------
 type Json struct{
 	Name string `json: "name"`
 	Owner Ownerstr  `json: "owner"`
-	//language url
+	Languages_url string `json: "languages_url"`
+	Contributors_url string `json: "contributors_url"`
 	
 }
 
 type Ownerstr struct{
 	Login string `json: "login"`
+}
+
+//		-------------------------------------------------------
+//		Struct for contributions holding commits
+//		-------------------------------------------------------
+type Committer struct{
+	Login string `json: "login"`
+	Contributions int `json: "contributions"`
 }
 
 
