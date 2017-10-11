@@ -15,7 +15,8 @@ func main(){
 func HandlerTest(w http.ResponseWriter, r *http.Request){
 	
 	//parts := strings.Split(r.URL.Path, "/")
-	FirstPart(w)	
+	mainUrl := "http://www.mocky.io/v2/59c6f6f9400000be06afe8a0"
+	FirstPart(w, mainUrl)	
 }
 
 
@@ -45,8 +46,8 @@ func GetBody(w http.ResponseWriter, url string) []byte{
 //		This function writes parses and writes "name" and "owner", gives the 
 //		"language" url to the SecondPart function as an arg
 //		-------------------------------------------------------------------------
-func FirstPart(w http.ResponseWriter){
-	body := GetBody(w, "http://www.mocky.io/v2/59c6f6f9400000be06afe8a0")
+func FirstPart(w http.ResponseWriter, mainUrl string){
+	body := GetBody(w, mainUrl)
 	
 	var j Json
 	err := json.Unmarshal(body, &j)
